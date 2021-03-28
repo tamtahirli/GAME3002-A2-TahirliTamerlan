@@ -14,9 +14,9 @@ public class BumperBehaviour : MonoBehaviour
     [SerializeField]
     private float m_fLightDelay = 0.1f;
     [SerializeField]
-    private bool m_bIsMoving = false;
+    private bool m_bIsMovable = false;
     [SerializeField]
-    private float m_fMoveAmount = 0;
+    private Vector3 m_fMovePos = Vector3.zero;
     [SerializeField]
     private float m_fMovementSpeed = 0;
 
@@ -26,7 +26,7 @@ public class BumperBehaviour : MonoBehaviour
     private float m_fLastHit = -1;
     private Vector3 m_vStartScale;
     private Vector3 m_vStartPos;
-    private bool m_bMovingLeft = false;
+    private bool m_bIsMoving = false;
 
     private void Start()
     {
@@ -35,29 +35,38 @@ public class BumperBehaviour : MonoBehaviour
         DisableLight();
         m_vStartScale = transform.localScale;
         m_vStartPos = transform.position;
-        if (m_bIsMoving)
+        if (m_bIsMovable)
         {
             m_vStartPos = transform.position;
-            m_bMovingLeft = true;
+            m_bIsMoving = true;
         }
     }
 
-    float m_fDeltaTime;
+    float m_fDeltaTime = 0;
     private void Update()
     {
-        m_fDeltaTime += Time.deltaTime;
-        if(m_bIsMoving)
+        if(m_bIsMovable)
         {
-            if(m_bMovingLeft)
+            m_fDeltaTime += Time.deltaTime;
+            if (m_bIsMoving)
             {
-                if(transform.position.x <= m_vStartPos.x - m_fMoveAmount)
+                Vector3 pos = m_vStartPos - m_fMovePos;
+                transform.position = Vector3.Lerp(transform.position, pos, m_fDeltaTime * m_fMovementSpeed);
+                if(transform.position == pos)
                 {
-
+                    m_bIsMoving = false;
+                    m_fDeltaTime = 0;
                 }
             }
             else
             {
-
+                Vector3 pos = m_vStartPos + m_fMovePos;
+                transform.position = Vector3.Lerp(transform.position, pos, m_fDeltaTime * m_fMovementSpeed);
+                if (transform.position == pos)
+                {
+                    m_bIsMoving = true;
+                    m_fDeltaTime = 0;
+                }
             }
         }
         if (m_fLastHit != -1)
