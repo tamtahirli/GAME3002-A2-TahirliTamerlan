@@ -5,7 +5,7 @@ using UnityEngine;
 public class Plunger : MonoBehaviour
 {
     [SerializeField]
-    private float m_fZPosMin = 0, m_fDamping = 0;
+    private float m_fZPosMin = 0, m_fDamping = 0, m_fPullBackLimit = 50;
 
     private Rigidbody m_rBody = null;
 
@@ -51,7 +51,7 @@ public class Plunger : MonoBehaviour
         {
             // Clamped movement of plunger.
             Vector3 pos = transform.position;
-            m_fMouseDist = Mathf.Clamp01((m_fStartMouseZ - Input.mousePosition.y) / 50); // 0-1 value of mouse pull back, max 50
+            m_fMouseDist = Mathf.Clamp01((m_fStartMouseZ - Input.mousePosition.y) / m_fPullBackLimit); // 0-1 value of mouse pull back, max 50
             pos.z = Mathf.Clamp(m_vStartPos.z - m_fMouseDist, m_fZPosMin, m_fZPosMax); // Subtract on the Z to pull it back
             transform.position = pos;
         }
@@ -69,6 +69,8 @@ public class Plunger : MonoBehaviour
         {
             UpdateSpringForce(m_fMouseDist); // Update spring force if so.
         }
+
+        m_vPrevVel = m_rBody.velocity; // Always keep track of prev velocity
     }
 
     private float CalculateSpringConstant()
@@ -85,14 +87,12 @@ public class Plunger : MonoBehaviour
 
     private void UpdateSpringForce(float scalar)
     {
-        Debug.Log("Scalar: " + scalar);
         float damping = m_fDamping * scalar; // Scalar to damping, depending on how much it was pulled back.
 
+        // -sk * (rest - pos) - (damping * (velf - veli)
         m_vForce = -m_fSpring * (m_vStartPos - transform.position) -
             damping * (m_rBody.velocity - m_vPrevVel);
 
         m_rBody.AddForce(m_vForce, ForceMode.Acceleration);
-
-        m_vPrevVel = m_rBody.velocity;
     }
 }

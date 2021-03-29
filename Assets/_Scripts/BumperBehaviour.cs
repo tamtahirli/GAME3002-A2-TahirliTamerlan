@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class BumperBehaviour : MonoBehaviour
@@ -9,6 +10,8 @@ public class BumperBehaviour : MonoBehaviour
     private bool m_bIsActive = true;
     [SerializeField]
     private int m_iScore = 0;
+    [SerializeField]
+    private bool m_bIsBonus = false;
     [SerializeField]
     private float m_fReflectScalar = 2f;
     [SerializeField]
@@ -27,6 +30,9 @@ public class BumperBehaviour : MonoBehaviour
     private Vector3 m_vStartScale;
     private Vector3 m_vStartPos;
     private bool m_bIsMoving = false;
+    private TMP_Text bonusText;
+
+    private AudioSource bonusSource;
 
     private void Start()
     {
@@ -39,6 +45,17 @@ public class BumperBehaviour : MonoBehaviour
         {
             m_vStartPos = transform.position;
             m_bIsMoving = true;
+        }
+
+        if(m_bIsBonus)
+        {
+            bonusText = GetComponentInChildren<TMP_Text>();
+            Debug.Log(bonusText);
+            bonusText.gameObject.SetActive(false);
+            bonusSource = GetComponent<AudioSource>();
+            bonusSource.clip = SoundManager.instance.BashtoySound;
+            bonusSource.pitch = 1.0f;
+            bonusSource.volume = 0.2f;
         }
     }
 
@@ -94,6 +111,17 @@ public class BumperBehaviour : MonoBehaviour
                     BallScript.instance.AddScore(m_iScore);
                     transform.DOComplete();
                     transform.DOPunchScale(m_vStartScale * 1.02f, m_fLightDelay);
+                    if(m_bIsBonus)
+                    {
+                        bonusSource.Play();
+                        bonusText.gameObject.SetActive(true);
+                        bonusText.DOComplete();
+                        bonusText.transform.DOScale(1.1f, 1.0f).From(Vector3.one).OnComplete(() => bonusText.gameObject.SetActive(false));
+                    }
+                    else
+                    {
+                        SoundManager.instance.PlaySound(SoundManager.instance.HitSound, 0.4f, Random.Range(1.0f, 1.5f));
+                    }
                 }
             }
             else

@@ -55,6 +55,11 @@ public class BallScript : MonoBehaviour
         {
             Reset();
         }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Application.Quit();
+        }
     }
 
     public void Reset()

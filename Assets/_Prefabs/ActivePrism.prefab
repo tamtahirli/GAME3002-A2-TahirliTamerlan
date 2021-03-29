@@ -719,8 +719,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bIsActive: 1
   m_iScore: 10
+  m_bIsBonus: 0
   m_fReflectScalar: 5
   m_fLightDelay: 0.1
+  m_bIsMovable: 0
+  m_fMovePos: {x: 0, y: 0, z: 0}
+  m_fMovementSpeed: 0
 --- !u!1 &6482137967572584505
 GameObject:
   m_ObjectHideFlags: 0

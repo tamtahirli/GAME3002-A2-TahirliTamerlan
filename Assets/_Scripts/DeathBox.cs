@@ -8,6 +8,7 @@ public class DeathBox : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
+            SoundManager.instance.PlaySound(SoundManager.instance.LoseSound, 0.5f, 1.0f);
             BallScript.instance.Reset();
         }
     }
